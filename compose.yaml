@@ -16,7 +16,6 @@ services:
       - ./:/workspace
     command: >-
       bash -lc "source /opt/ros/jazzy/setup.bash &&
-      rosdep install --from-paths src --ignore-src -r -y &&
       colcon build --symlink-install &&
       source install/setup.bash &&
       export PYTHONPATH=/workspace/src:$${PYTHONPATH:-} &&
