@@ -36,6 +36,7 @@ download_archive teleimager.tar.gz \
   https://codeload.github.com/unitreerobotics/teleimager/tar.gz/b81de448bca9c696d7ce145f4af71c66146d0b69
 
 docker build \
+  --network=host \
   -f "${ROOT_DIR}/docker/isaac/Dockerfile" \
   -t embodied-book-labs-isaac:5.0 \
   "${ROOT_DIR}"
