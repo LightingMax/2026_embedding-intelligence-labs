@@ -12,7 +12,7 @@ from std_msgs.msg import String
 class ScenarioPublisher(Node):
     def __init__(self) -> None:
         super().__init__("embodied_book_scenario")
-        self.publishers = {
+        self.topic_publishers = {
             "/book/scene_state": self.create_publisher(String, "/book/scene_state", 10),
             "/book/task_spec": self.create_publisher(String, "/book/task_spec", 10),
             "/book/plan_spec": self.create_publisher(String, "/book/plan_spec", 10),
@@ -34,7 +34,7 @@ class ScenarioPublisher(Node):
         for topic, payload in payloads.items():
             message = String()
             message.data = json.dumps(payload, ensure_ascii=False)
-            self.publishers[topic].publish(message)
+            self.topic_publishers[topic].publish(message)
             self.get_logger().info(f"published {topic}")
         self.sent = True
 
