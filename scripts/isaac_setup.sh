@@ -45,7 +45,7 @@ if ! compgen -G "${RUNTIME_WHEELS}/pin-2.7.0-*.whl" >/dev/null \
     -v "${RUNTIME_WHEELS}:/wheels" \
     --entrypoint /isaac-sim/python.sh \
     nvcr.io/nvidia/isaac-sim:5.0.0 \
-    -m pip download --dest /wheels \
+    -m pip download --no-build-isolation --dest /wheels \
     "flatdict==4.0.1" "gymnasium==1.2.0" "prettytable==3.3.0" "pin==2.7.0"
 fi
 
