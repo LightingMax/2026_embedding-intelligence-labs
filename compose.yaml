@@ -6,15 +6,18 @@ services:
 
   ros2:
     profiles: ["ros2"]
-    image: ros:jazzy-ros-base
+    build:
+      context: .
+      dockerfile: docker/ros2/Dockerfile
+    image: embodied-book-labs-ros2:jazzy
     network_mode: host
     working_dir: /workspace/ros_ws
     volumes:
       - ./:/workspace
     command: >-
       bash -lc "source /opt/ros/jazzy/setup.bash &&
-      apt-get update && apt-get install -y python3-colcon-common-extensions && rosdep update &&
       rosdep install --from-paths src --ignore-src -r -y &&
       colcon build --symlink-install &&
       source install/setup.bash &&
+      export PYTHONPATH=/workspace/src:$${PYTHONPATH:-} &&
       ros2 run embodied_book_bridge scenario_publisher"
