@@ -26,7 +26,7 @@ RUN mkdir IsaacLab \
     && /isaac-sim/python.sh -m pip install --no-index --find-links=/tmp/runtime-wheels \
        --no-build-isolation "flatdict==4.0.1" \
     && /isaac-sim/python.sh -m pip install --no-index --find-links=/tmp/runtime-wheels \
-       "gymnasium==1.2.0" "prettytable==3.3.0" "pin==2.7.0" \
+       "gymnasium==1.2.0" "prettytable==3.3.0" "pin==2.7.0" "pin-pink==3.1.0" \
     && /isaac-sim/python.sh -m pip install --no-cache-dir --no-deps -e /opt/IsaacLab/source/isaaclab
 
 COPY external/isaac-deps/cyclonedds.tar.gz /tmp/cyclonedds.tar.gz
