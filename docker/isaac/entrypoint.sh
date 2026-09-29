@@ -29,9 +29,14 @@ case "${1:-smoke}" in
       exit 0
     fi
     mkdir -p "${asset_root}"
-    git clone https://huggingface.co/datasets/unitreerobotics/unitree_sim_isaaclab_usds "${asset_root}/download"
-    test "$(stat -c%s "${asset_root}/download/assets.zip")" -gt 1073741824
-    unzip -q "${asset_root}/download/assets.zip" -d "${asset_root}"
+    asset_url="${UNITREE_ASSET_URL:-https://hf-mirror.com/datasets/unitreerobotics/unitree_sim_isaaclab_usds/resolve/main/assets.zip}"
+    archive="${asset_root}/assets.zip"
+    curl -fL --retry 20 --retry-all-errors --retry-delay 5 \
+      --connect-timeout 20 --speed-time 60 --speed-limit 1024 \
+      -C - -o "${archive}.part" "${asset_url}"
+    test "$(stat -c%s "${archive}.part")" -gt 1073741824
+    mv "${archive}.part" "${archive}"
+    unzip -q "${archive}" -d "${asset_root}"
     echo "UNITREE_ASSETS_READY"
     ;;
   shell)
