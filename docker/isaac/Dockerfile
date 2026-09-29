@@ -37,13 +37,15 @@ COPY external/isaac-deps/unitree-sdk.tar.gz /tmp/unitree-sdk.tar.gz
 RUN mkdir unitree_sdk2_python \
     && tar -xzf /tmp/unitree-sdk.tar.gz --strip-components=1 -C unitree_sdk2_python \
     && rm /tmp/unitree-sdk.tar.gz \
-    && /isaac-sim/python.sh -m pip install --no-cache-dir -e /opt/unitree_sdk2_python
+    && /isaac-sim/python.sh -m pip install --no-cache-dir \
+       "numpy<2" "opencv-python<4.12" "cyclonedds==0.10.2" \
+    && /isaac-sim/python.sh -m pip install --no-cache-dir --no-deps -e /opt/unitree_sdk2_python
 
 COPY external/isaac-deps/unitree-sim.tar.gz /tmp/unitree-sim.tar.gz
 COPY external/isaac-deps/teleimager.tar.gz /tmp/teleimager.tar.gz
 RUN mkdir unitree_sim_isaaclab \
     && tar -xzf /tmp/unitree-sim.tar.gz --strip-components=1 -C unitree_sim_isaaclab \
-    && mkdir unitree_sim_isaaclab/teleimager \
+    && mkdir -p unitree_sim_isaaclab/teleimager \
     && tar -xzf /tmp/teleimager.tar.gz --strip-components=1 -C unitree_sim_isaaclab/teleimager \
     && rm /tmp/unitree-sim.tar.gz /tmp/teleimager.tar.gz \
     && cd unitree_sim_isaaclab \
