@@ -21,7 +21,7 @@ RUN mkdir IsaacLab \
     && rm /tmp/isaaclab.tar.gz \
     && cd IsaacLab \
     && ln -s /isaac-sim _isaac_sim \
-    && ./isaaclab.sh --install
+    && ./isaaclab.sh --install none
 
 COPY external/isaac-deps/cyclonedds.tar.gz /tmp/cyclonedds.tar.gz
 RUN mkdir cyclonedds \
