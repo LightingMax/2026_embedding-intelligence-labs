@@ -1,4 +1,5 @@
 FROM ros:jazzy-ros-base
 
-RUN command -v colcon \
-    && python3 -c "import rclpy; from std_msgs.msg import String"
+RUN bash -lc 'source /opt/ros/jazzy/setup.bash \
+    && command -v colcon \
+    && python3 -c "import rclpy; from std_msgs.msg import String"'
