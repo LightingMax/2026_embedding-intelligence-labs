@@ -1,0 +1,6 @@
+builtin_interfaces/Time stamp
+string correlation_id
+string schema_name
+uint32 schema_version
+uint32 data_version
+string json_data

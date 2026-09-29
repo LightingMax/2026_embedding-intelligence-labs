@@ -13,6 +13,8 @@
   "localization": {
     "method": "visual_inertial_slam",
     "map_id": "classroom_a",
+    "map_version": 3,
+    "status": "normal",
     "base_pose": {"frame": "map", "xyz": [0.0, 0.0, 0.0], "yaw": 0.0},
     "position_std_m": 0.03
   },
@@ -25,7 +27,10 @@
         "color": "blue",
         "pose": {"frame": "map", "xyz": [1.8, 0.3, 0.82], "yaw": 0.0},
         "confidence": 0.94,
-        "observed_at": 12.45
+        "observed_at": 12.45,
+        "attributes": {"container_state": "empty", "material": "plastic"},
+        "relations": [{"predicate": "on", "object": "table_07"}],
+        "affordance_candidates": [{"action": "side_grasp", "actor": "g1_dex1", "quality": 0.78}]
       },
       {
         "object_id": "reward_blue",
@@ -33,7 +38,12 @@
         "color": "blue",
         "pose": {"frame": "map", "xyz": [1.9, -0.25, 0.84], "yaw": 0.0},
         "confidence": 0.91,
-        "observed_at": 12.44
+        "observed_at": 12.44,
+        "attributes": {
+          "decoration_color": "blue",
+          "restrictions": ["do_not_move_without_authorization"]
+        },
+        "relations": [{"predicate": "on", "object": "table_07"}]
       },
       {
         "object_id": "cup_red",
@@ -41,13 +51,17 @@
         "color": "red",
         "pose": {"frame": "map", "xyz": [1.65, 0.1, 0.82], "yaw": 0.0},
         "confidence": 0.96,
-        "observed_at": 12.45
+        "observed_at": 12.45,
+        "attributes": {"container_state": "unknown"},
+        "relations": [{"predicate": "on", "object": "table_07"}]
       }
     ]
   },
   "environment": {
     "minimum_clearance_m": 0.72,
     "human_in_protective_zone": false,
-    "table_height_m": 0.8
+    "table_height_m": 0.8,
+    "alternate_route_available": true,
+    "obstacles": []
   }
 }

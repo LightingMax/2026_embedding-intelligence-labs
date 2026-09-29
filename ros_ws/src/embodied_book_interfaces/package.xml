@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>embodied_book_interfaces</name>
+  <version>0.2.0</version>
+  <description>Typed teaching interfaces for the embodied intelligence companion labs.</description>
+  <maintainer email="871772700@qq.com">LightingMax</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_depend>rosidl_default_generators</build_depend>
+  <depend>builtin_interfaces</depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

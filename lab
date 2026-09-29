@@ -14,6 +14,15 @@ case "${command_name}" in
   chapter)
     python3 -m embodied_book_labs.cli chapter "$@"
     ;;
+  matrix)
+    python3 -m embodied_book_labs.cli matrix "$@"
+    ;;
+  speech)
+    python3 -m embodied_book_labs.cli speech "$@"
+    ;;
+  ros2)
+    "${ROOT_DIR}/scripts/ros2_run.sh" "$@"
+    ;;
   serve)
     python3 -m embodied_book_labs.cli serve "$@"
     ;;
@@ -26,7 +35,7 @@ case "${command_name}" in
     "${ROOT_DIR}/scripts/isaac_${subcommand}.sh" "$@"
     ;;
   *)
-    echo "用法: ./lab {demo|chapter N|serve|test|isaac doctor|isaac setup|isaac run}" >&2
+    echo "用法: ./lab {demo|chapter N|matrix|serve|speech|ros2 [fault]|test|isaac doctor|isaac setup|isaac run}" >&2
     exit 2
     ;;
 esac

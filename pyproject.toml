@@ -11,6 +11,10 @@ license = {text = "MIT"}
 authors = [{name = "LightingMax", email = "871772700@qq.com"}]
 dependencies = []
 
+[project.optional-dependencies]
+speech = ["websocket-client>=1.8,<2"]
+dev = ["pytest>=8,<9"]
+
 [project.scripts]
 embodied-labs = "embodied_book_labs.cli:main"
 

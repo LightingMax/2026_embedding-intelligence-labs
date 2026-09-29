@@ -1,0 +1,11 @@
+string correlation_id
+string skill
+string arguments_json
+uint32 scene_version
+---
+string status
+string detail_json
+---
+string phase
+float32 progress
+string detail_json

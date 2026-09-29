@@ -49,11 +49,14 @@ RUN mkdir unitree_sdk2_python \
 
 COPY external/isaac-deps/unitree-sim.tar.gz /tmp/unitree-sim.tar.gz
 COPY external/isaac-deps/teleimager.tar.gz /tmp/teleimager.tar.gz
+COPY docker/isaac/patch_unitree.py /tmp/patch_unitree.py
 RUN mkdir unitree_sim_isaaclab \
     && tar -xzf /tmp/unitree-sim.tar.gz --strip-components=1 -C unitree_sim_isaaclab \
     && mkdir -p unitree_sim_isaaclab/teleimager \
     && tar -xzf /tmp/teleimager.tar.gz --strip-components=1 -C unitree_sim_isaaclab/teleimager \
     && rm /tmp/unitree-sim.tar.gz /tmp/teleimager.tar.gz \
+    && /isaac-sim/python.sh /tmp/patch_unitree.py \
+    && rm /tmp/patch_unitree.py \
     && cd unitree_sim_isaaclab \
     && /isaac-sim/python.sh -m pip install --no-cache-dir -r requirements.txt \
     && /isaac-sim/python.sh -m pip install --no-cache-dir -e teleimager \

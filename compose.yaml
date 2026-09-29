@@ -14,9 +14,11 @@ services:
     working_dir: /workspace/ros_ws
     volumes:
       - ./:/workspace
+    environment:
+      BOOK_ROS_FAULT: ${BOOK_ROS_FAULT:-none}
     command: >-
       bash -lc "source /opt/ros/jazzy/setup.bash &&
       colcon build --symlink-install &&
       source install/setup.bash &&
       export PYTHONPATH=/workspace/src:$${PYTHONPATH:-} &&
-      ros2 run embodied_book_bridge scenario_publisher"
+      ros2 run embodied_book_bridge integration_demo"

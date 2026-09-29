@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 mode="${1:-smoke}"
+if [[ $# -gt 0 ]]; then shift; fi
 display_args=()
 if [[ "${mode}" == "g1-gui" ]]; then
   display_name="${DISPLAY:-:0}"
@@ -18,10 +20,13 @@ if [[ "${mode}" == "g1-gui" ]]; then
   )
 fi
 
+mkdir -p "${ROOT_DIR}/artifacts/isaac"
+
 docker run --rm --gpus all --network host \
   -e ACCEPT_EULA=Y -e PRIVACY_CONSENT=Y -e PYTHONUNBUFFERED=1 \
   "${display_args[@]}" \
   -v "${HOME}/docker/embodied-book-labs/cache:/root/.cache:rw" \
   -v "${HOME}/docker/embodied-book-labs/logs:/root/.nvidia-omniverse/logs:rw" \
   -v "${HOME}/docker/embodied-book-labs/unitree-assets/assets:/opt/unitree_sim_isaaclab/assets:ro" \
-  embodied-book-labs-isaac:5.0 "${mode}"
+  -v "${ROOT_DIR}/artifacts/isaac:/book-artifacts:rw" \
+  embodied-book-labs-isaac:5.0 "${mode}" "$@"

@@ -15,6 +15,17 @@ case "${1:-smoke}" in
       --task Isaac-PickPlace-Cylinder-G129-Dex1-Joint \
       --enable_dex1_dds --robot_type g129 --no_render "$@"
     ;;
+  g1-verify)
+    shift
+    exec /isaac-sim/python.sh sim_main.py \
+      --device cpu --headless --enable_cameras \
+      --task Isaac-PickPlace-Cylinder-G129-Dex1-Joint \
+      --enable_dex1_dds --robot_type g129 --no_render \
+      --livestream_type 0 \
+      --camera_include "" \
+      --camera_exclude world_camera,front_camera,left_wrist_camera,right_wrist_camera \
+      --max_steps 2 --book_report /book-artifacts/g1-validation.json "$@"
+    ;;
   g1-gui)
     shift
     exec /isaac-sim/python.sh sim_main.py \

@@ -2,8 +2,13 @@ from __future__ import annotations
 
 import json
 import os
+import base64
+import hashlib
+import hmac
 import urllib.request
-from typing import Any
+import urllib.parse
+from email.utils import formatdate
+from typing import Any, Optional
 
 
 class ProviderError(RuntimeError):
@@ -67,3 +72,90 @@ class SpeechProvider:
 
     def synthesize(self, text: str) -> bytes:
         raise NotImplementedError
+
+
+class XunfeiSpeechProvider(SpeechProvider):
+    """Optional iFlytek IAT/TTS adapter; credentials remain in process memory."""
+
+    def __init__(self) -> None:
+        self.app_id = os.getenv("XUNFEI_APP_ID", "")
+        self.api_key = os.getenv("XUNFEI_API_KEY", "")
+        self.api_secret = os.getenv("XUNFEI_API_SECRET", "")
+        if not all((self.app_id, self.api_key, self.api_secret)):
+            raise ProviderError("XUNFEI_APP_ID, XUNFEI_API_KEY and XUNFEI_API_SECRET are required")
+
+    def _signed_url(self, base_url: str, now: Optional[str] = None) -> str:
+        parts = urllib.parse.urlsplit(base_url)
+        date = now or formatdate(usegmt=True)
+        signature_origin = f"host: {parts.netloc}\ndate: {date}\nGET {parts.path} HTTP/1.1"
+        signature = base64.b64encode(
+            hmac.new(self.api_secret.encode(), signature_origin.encode(), hashlib.sha256).digest()
+        ).decode()
+        authorization_origin = (
+            f'api_key="{self.api_key}", algorithm="hmac-sha256", '
+            f'headers="host date request-line", signature="{signature}"'
+        )
+        authorization = base64.b64encode(authorization_origin.encode()).decode()
+        query = urllib.parse.urlencode({"authorization": authorization, "date": date, "host": parts.netloc})
+        return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, query, ""))
+
+    @staticmethod
+    def _connect(url: str):
+        try:
+            import websocket
+        except ImportError as exc:
+            raise ProviderError("Install the speech extra: pip install '.[speech]'") from exc
+        try:
+            return websocket.create_connection(url, timeout=30)
+        except Exception as exc:
+            raise ProviderError(f"iFlytek connection failed: {exc}") from exc
+
+    def transcribe(self, audio: bytes) -> str:
+        """Transcribe mono 16 kHz, 16-bit PCM audio."""
+        socket = self._connect(self._signed_url("wss://iat-api.xfyun.cn/v2/iat"))
+        payload = {
+            "common": {"app_id": self.app_id},
+            "business": {"language": "zh_cn", "domain": "iat", "accent": "mandarin", "dwa": "wpgs"},
+            "data": {"status": 2, "format": "audio/L16;rate=16000", "encoding": "raw", "audio": base64.b64encode(audio).decode()},
+        }
+        fragments: dict[int, str] = {}
+        try:
+            socket.send(json.dumps(payload))
+            while True:
+                message = json.loads(socket.recv())
+                if message.get("code") != 0:
+                    raise ProviderError(f"iFlytek ASR failed with code {message.get('code')}")
+                data = message.get("data", {})
+                result = data.get("result", {})
+                text = "".join(candidate.get("w", "") for item in result.get("ws", []) for candidate in item.get("cw", [])[:1])
+                if text:
+                    fragments[int(result.get("sn", len(fragments)))] = text
+                if data.get("status") == 2:
+                    break
+        finally:
+            socket.close()
+        return "".join(fragments[index] for index in sorted(fragments))
+
+    def synthesize(self, text: str) -> bytes:
+        """Synthesize Mandarin speech and return MP3 bytes."""
+        socket = self._connect(self._signed_url("wss://tts-api.xfyun.cn/v2/tts"))
+        payload = {
+            "common": {"app_id": self.app_id},
+            "business": {"aue": "lame", "auf": "audio/L16;rate=16000", "vcn": "xiaoyan", "tte": "utf8"},
+            "data": {"status": 2, "text": base64.b64encode(text.encode()).decode()},
+        }
+        chunks: list[bytes] = []
+        try:
+            socket.send(json.dumps(payload))
+            while True:
+                message = json.loads(socket.recv())
+                if message.get("code") != 0:
+                    raise ProviderError(f"iFlytek TTS failed with code {message.get('code')}")
+                data = message.get("data", {})
+                if data.get("audio"):
+                    chunks.append(base64.b64decode(data["audio"]))
+                if data.get("status") == 2:
+                    break
+        finally:
+            socket.close()
+        return b"".join(chunks)

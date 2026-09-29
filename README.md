@@ -1,84 +1,101 @@
 # 具身智能原理与方法：配套实验
 
-本仓库把教材中的“递送蓝色杯子”主线实现为六个逐章实验和一个完整智能体。默认后端只需要 Python 3.9+；ROS 2 与 Isaac Sim 作为增强后端接入同一组数据结构和验收测试。
+本仓库把教材中的“递送蓝色杯子”主线实现为六个逐章实验和一个可恢复智能体。普通电脑可直接运行确定性教学后端；ROS 2 Jazzy与Isaac Sim 5.0用于验证通信契约、仿真场景、宇树G1资产和运行时证据。
 
 项目主页：<https://github.com/LightingMax/2026_embedding-intelligence-labs>
 
-## 一键体验
+## 五分钟体验
 
 ```bash
 ./lab demo
+./lab matrix
+./lab serve
 ```
 
-命令会依次运行感知、任务理解、任务规划、运动可行性、示范学习和智能体编排，并在 `artifacts/latest/index.html` 生成可视化报告。
+- `demo`：运行一次正常六章数据链。
+- `matrix`：运行感知退化、语义歧义、规则冲突、计划失效、运动拒绝和六类运行时故障。
+- `serve`：在 <http://127.0.0.1:8000> 查看报告。
 
-```bash
-./lab test                 # 运行测试
-./lab chapter 1            # 只运行某一章
-./lab demo --fault target_moved
-./lab serve                # 在 http://127.0.0.1:8000 查看报告
-```
+结果写入 `artifacts/latest/`：
 
-## 六章与实验
+- `index.html`：逐章结果、运行时间线和证据摘要；
+- `result.json`：完整结构化输出；
+- `timeline.csv`：便于课程报告分析的事件表。
 
-| 章节 | 实验 | 输入 | 输出 |
+## 六章实验
+
+| 章节 | 输入 | 主要输出 | 可验证失效 |
 | --- | --- | --- | --- |
-| 第1章 感知 | 从多源观测形成状态 | 本体、定位、视觉与系统观测 | `SceneState` |
-| 第2章 认知 | 从场景与指令形成任务 | `SceneState`、用户指令与规则 | `TaskSpec` |
-| 第3章 规划 | 生成并验证离散技能计划 | `TaskSpec`、技能目录 | `PlanSpec` |
-| 第4章 运动 | 检查可达性并生成参考路径 | 技能目标、本体与障碍 | `MotionCheck` |
-| 第5章 学习 | 从示范学习阶段动作 | 轨迹样本 | `LearnedPolicy` |
-| 第6章 智能体 | 编排、取消、恢复与取证 | 前五章接口与事件 | `RuntimeState`、事件日志 |
-
-每一章都可以单独运行；第六章只通过稳定接口调用前五章能力。教材中的理论定义不依赖某个仿真器。
-
-## 后端
-
-### Mock 后端
-
-默认后端使用仓库内的小型场景和示范数据，适合课堂、CI和没有GPU的电脑。它完整执行数据流，但不声称替代物理仿真。
-
-### ROS 2 后端
-
-`ros_ws/` 提供ROS 2 Jazzy示例节点，把相同结构发布到 `/book/scene_state`、`/book/task_spec`、`/book/plan_spec` 和 `/book/runtime_events`。运行：
+| 第1章 感知 | 关节、IMU、接触、SLAM、视觉 | `SceneState` | 相机黑屏、重定位、深度无效、目标移动 |
+| 第2章 认知 | `SceneState`、用户指令、规则 | `TaskSpec` | 颜色歧义、类别歧义、展示品规则冲突 |
+| 第3章 规划 | `TaskSpec`、技能目录 | `PlanSpec` | 技能缺失、场景版本过期、被阻断的执行门槛 |
+| 第4章 运动 | 本体、目标、通道和障碍 | `MotionCheck` | 状态无效、间隙不足、不可达、需绕行 |
+| 第5章 学习 | 示范轨迹和随机化动力学 | 行为克隆策略、到达策略评价 | 数据覆盖不足、范围外动力学 |
+| 第6章 智能体 | 前五章接口和异步事件 | `RuntimeState`、时间线 | 目标移动、路径受阻、抓取失败、人员侵入、反馈丢失、取消 |
 
 ```bash
-docker compose --profile ros2 up --build
+./lab chapter 1
+./lab chapter 2 --scenario ambiguous_target
+./lab chapter 4 --scenario clearance_blocked
+./lab demo --fault grasp_failed
+./lab demo --fault feedback_lost
 ```
 
-### Unitree G1 + Isaac Sim 后端
+## ROS 2 Jazzy闭环
 
-服务器方案基于宇树官方 `unitree_sim_isaaclab`，固定到仓库记录的提交，并使用其G1 29自由度夹爪场景。RTX 50系列使用Isaac Sim 5.0.0。安装体积较大，首次运行会下载NVIDIA与宇树资产：
+ROS 2工作空间包含：
+
+- `BookState.msg`：带时间、关联ID、结构版本和数据版本的状态载体；
+- `QuerySkills.srv`：查询当前技能目录；
+- `ExecuteSkill.action`：输入技能、参数和场景版本，返回进度、结果和取消后安全状态。
+
+```bash
+./lab ros2
+./lab ros2 user_cancel
+./lab ros2 path_blocked
+```
+
+正常运行会依次执行六个技能并在 `artifacts/ros2/result.json` 保存Action反馈。取消实验要求服务器返回 `canceled_safe_hold`，而不是把未知物理结果写成成功。
+
+## Unitree G1 + Isaac Sim
+
+GPU增强后端固定Isaac Sim 5.0.0、Isaac Lab 2.2.0与宇树官方 `unitree_sim_isaaclab` 提交。场景使用G1 29自由度与Dex1夹爪，蓝色圆柱作为课堂用杯子几何代理。
 
 ```bash
 ./lab isaac doctor
 ./lab isaac setup
-./lab isaac run
-./lab isaac run g1-gui       # 在服务器Xorg桌面显示，可通过Sunshine/Moonlight观看
+./lab isaac run smoke
+./lab isaac run g1-verify
+./lab isaac run g1-gui
 ```
 
-该后端通过适配器把相机、本体状态与DDS反馈转换为教材接口。仿真策略权重只用于仿真验证；实机控制不在默认脚本中启用。
+`g1-verify` 会加载G1、桌面、教学杯子、相机和仿真时钟，运行固定步数后自动退出，并写入 `artifacts/isaac/g1-validation.json`。`g1-gui` 在服务器Xorg桌面显示，可通过Sunshine/Moonlight查看。
 
-## 可选模型和语音服务
+G1默认入口只启用仿真DDS域，不连接实体机器人。有限步验证证明资产、任务、观测和控制循环能启动；它不等于真实杯子的抓取成功率证据。
 
-核心实验不需要密钥。Qwen只参与候选计划复核，不直接调用机器人技能；可选服务只从进程环境读取凭据，仓库不会保存密钥：
+## 可选Qwen与讯飞语音
+
+核心实验不需要密钥。Qwen只审查候选计划，不获得技能执行权；讯飞接口用于语音输入输出。
 
 ```bash
 export DASHSCOPE_API_KEY=...
 ./lab demo --llm qwen
+
+python3 -m pip install -e '.[speech]'
+export XUNFEI_APP_ID=...
+export XUNFEI_API_KEY=...
+export XUNFEI_API_SECRET=...
+./lab speech tts --text "请接好蓝色杯子"
+./lab speech asr --input sample-16k-mono.pcm
 ```
 
-讯飞语音和其他语音服务通过 `SpeechProvider` 接口接入。课堂发布时由教师端代理保管凭据，学生浏览器不直接持有供应商密钥。语音服务属于输入输出通道，任务语义仍由第2章接口校验。
+密钥只从进程环境读取，不应写入课程数据、日志或仓库。
 
-## 目录
+## 验证
 
-- `data/`：可提交的小型场景、事件与示范数据。
-- `src/embodied_book_labs/`：六章可运行逻辑与统一数据接口。
-- `ros_ws/`：ROS 2教学桥接包。
-- `scripts/`：本地、服务器和Isaac环境入口。
-- `docs/`：系统边界、版本矩阵与实验验收标准。
-- `tests/`：接口、故障恢复和端到端测试。
+```bash
+./lab test
+docker compose run --rm labs
+```
 
-## 安全边界
-
-默认配置只运行仿真或确定性Mock数据，不连接实体机器人。任何实机适配都必须显式选择网络接口、关闭仿真DDS域并经过平台侧安全流程。
+版本锁定、系统边界和逐项验收见 `docs/`。
