@@ -1,0 +1,53 @@
+{
+  "scene_id": "blue_cup_classroom",
+  "version": 7,
+  "timestamp": 12.5,
+  "instruction": "请把桌上的蓝色杯子递给我",
+  "proprioception": {
+    "joint_position_rad": [0.0, -0.1, 0.2, 0.0],
+    "imu_rpy_rad": [0.0, 0.01, 0.0],
+    "foot_contacts": [true, true],
+    "battery_fraction": 0.82,
+    "capabilities": {"mobile_manipulation_range_m": 4.0, "right_gripper": true}
+  },
+  "localization": {
+    "method": "visual_inertial_slam",
+    "map_id": "classroom_a",
+    "base_pose": {"frame": "map", "xyz": [0.0, 0.0, 0.0], "yaw": 0.0},
+    "position_std_m": 0.03
+  },
+  "vision": {
+    "camera": "head_rgbd",
+    "objects": [
+      {
+        "object_id": "cup_blue",
+        "category": "cup",
+        "color": "blue",
+        "pose": {"frame": "map", "xyz": [1.8, 0.3, 0.82], "yaw": 0.0},
+        "confidence": 0.94,
+        "observed_at": 12.45
+      },
+      {
+        "object_id": "reward_blue",
+        "category": "trophy",
+        "color": "blue",
+        "pose": {"frame": "map", "xyz": [1.9, -0.25, 0.84], "yaw": 0.0},
+        "confidence": 0.91,
+        "observed_at": 12.44
+      },
+      {
+        "object_id": "cup_red",
+        "category": "cup",
+        "color": "red",
+        "pose": {"frame": "map", "xyz": [1.65, 0.1, 0.82], "yaw": 0.0},
+        "confidence": 0.96,
+        "observed_at": 12.45
+      }
+    ]
+  },
+  "environment": {
+    "minimum_clearance_m": 0.72,
+    "human_in_protective_zone": false,
+    "table_height_m": 0.8
+  }
+}

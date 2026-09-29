@@ -1,0 +1,9 @@
+{"phase":"search","action":"turn_head_to_table"}
+{"phase":"search","action":"turn_head_to_table"}
+{"phase":"approach","action":"move_to_pregrasp"}
+{"phase":"approach","action":"move_to_pregrasp"}
+{"phase":"grasp","action":"close_gripper_gently"}
+{"phase":"grasp","action":"close_gripper_gently"}
+{"phase":"handover","action":"extend_and_wait_for_contact"}
+{"phase":"handover","action":"extend_and_wait_for_contact"}
+{"phase":"recover","action":"retreat_and_reobserve"}

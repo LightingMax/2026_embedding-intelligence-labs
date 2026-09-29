@@ -1,0 +1,20 @@
+services:
+  labs:
+    build: .
+    volumes:
+      - ./artifacts:/workspace/artifacts
+
+  ros2:
+    profiles: ["ros2"]
+    image: ros:jazzy-ros-base
+    network_mode: host
+    working_dir: /workspace/ros_ws
+    volumes:
+      - ./:/workspace
+    command: >-
+      bash -lc "source /opt/ros/jazzy/setup.bash &&
+      apt-get update && rosdep update &&
+      rosdep install --from-paths src --ignore-src -r -y &&
+      colcon build --symlink-install &&
+      source install/setup.bash &&
+      ros2 run embodied_book_bridge scenario_publisher"

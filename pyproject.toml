@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "embodied-book-labs"
+version = "0.1.0"
+description = "Runnable companion labs for Embodied Intelligence: Principles and Methods"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "LightingMax", email = "871772700@qq.com"}]
+dependencies = []
+
+[project.scripts]
+embodied-labs = "embodied_book_labs.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

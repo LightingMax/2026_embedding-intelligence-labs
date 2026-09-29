@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>embodied_book_bridge</name>
+  <version>0.1.0</version>
+  <description>ROS 2 bridge for the embodied intelligence textbook labs.</description>
+  <maintainer email="871772700@qq.com">LightingMax</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+</package>
