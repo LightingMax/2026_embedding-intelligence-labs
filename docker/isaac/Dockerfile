@@ -23,7 +23,8 @@ RUN mkdir IsaacLab \
     && ln -s /isaac-sim _isaac_sim \
     && ./isaaclab.sh --install none \
     && /isaac-sim/python.sh -m pip install --no-cache-dir --no-build-isolation "flatdict==4.0.1" \
-    && /isaac-sim/python.sh -m pip install --no-cache-dir "gymnasium==1.2.0" "prettytable==3.3.0" \
+    && /isaac-sim/python.sh -m pip install --no-cache-dir \
+       "gymnasium==1.2.0" "prettytable==3.3.0" "pin==2.7.0" \
     && /isaac-sim/python.sh -m pip install --no-cache-dir --no-deps -e /opt/IsaacLab/source/isaaclab
 
 COPY external/isaac-deps/cyclonedds.tar.gz /tmp/cyclonedds.tar.gz
