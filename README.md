@@ -54,6 +54,7 @@ docker compose --profile ros2 up --build
 ./lab isaac doctor
 ./lab isaac setup
 ./lab isaac run
+./lab isaac run g1-gui       # 在服务器Xorg桌面显示，可通过Sunshine/Moonlight观看
 ```
 
 该后端通过适配器把相机、本体状态与DDS反馈转换为教材接口。仿真策略权重只用于仿真验证；实机控制不在默认脚本中启用。

@@ -15,6 +15,13 @@ case "${1:-smoke}" in
       --task Isaac-PickPlace-Cylinder-G129-Dex1-Joint \
       --enable_dex1_dds --robot_type g129 --no_render "$@"
     ;;
+  g1-gui)
+    shift
+    exec /isaac-sim/python.sh sim_main.py \
+      --device cpu --enable_cameras \
+      --task Isaac-PickPlace-Cylinder-G129-Dex1-Joint \
+      --enable_dex1_dds --robot_type g129 "$@"
+    ;;
   assets)
     asset_root="/assets-cache"
     if [[ -d "${asset_root}/assets" ]]; then
