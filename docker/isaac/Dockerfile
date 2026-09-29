@@ -10,23 +10,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && git lfs install --system
 
 WORKDIR /opt
-RUN git clone https://github.com/isaac-sim/IsaacLab.git \
+RUN git clone --depth 1 --branch v2.2.0 https://github.com/isaac-sim/IsaacLab.git \
     && cd IsaacLab \
-    && git checkout v2.2.0 \
     && ./isaaclab.sh --install
 
-RUN git clone https://github.com/eclipse-cyclonedds/cyclonedds.git -b releases/0.10.x \
+RUN git clone --depth 1 https://github.com/eclipse-cyclonedds/cyclonedds.git -b releases/0.10.x \
     && cmake -S cyclonedds -B cyclonedds/build -DCMAKE_INSTALL_PREFIX=/opt/cyclonedds/install \
     && cmake --build cyclonedds/build --target install -j2
 ENV CYCLONEDDS_HOME=/opt/cyclonedds/install
 ENV LD_LIBRARY_PATH=/opt/cyclonedds/install/lib:${LD_LIBRARY_PATH}
 
-RUN git clone https://github.com/unitreerobotics/unitree_sdk2_python.git \
+RUN git clone --depth 1 https://github.com/unitreerobotics/unitree_sdk2_python.git \
     && /isaac-sim/python.sh -m pip install --no-cache-dir -e /opt/unitree_sdk2_python
 
-RUN git clone https://github.com/unitreerobotics/unitree_sim_isaaclab.git \
+RUN mkdir unitree_sim_isaaclab \
     && cd unitree_sim_isaaclab \
-    && git checkout ${UNITREE_SIM_COMMIT} \
+    && git init \
+    && git remote add origin https://github.com/unitreerobotics/unitree_sim_isaaclab.git \
+    && git fetch --depth 1 origin ${UNITREE_SIM_COMMIT} \
+    && git checkout --detach FETCH_HEAD \
     && git submodule update --init --depth 1 \
     && /isaac-sim/python.sh -m pip install --no-cache-dir -r requirements.txt \
     && /isaac-sim/python.sh -m pip install --no-cache-dir -e teleimager \
