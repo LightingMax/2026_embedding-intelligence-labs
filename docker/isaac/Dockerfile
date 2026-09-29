@@ -14,37 +14,36 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && git lfs install --system
 
 WORKDIR /opt
+COPY external/isaac-deps/isaaclab.tar.gz /tmp/isaaclab.tar.gz
 RUN mkdir IsaacLab \
-    && curl -fsSL --retry 10 --retry-all-errors --connect-timeout 15 \
-       "https://codeload.github.com/isaac-sim/IsaacLab/tar.gz/${ISAACLAB_COMMIT}" \
-       | tar -xz --strip-components=1 -C IsaacLab \
+    && tar -xzf /tmp/isaaclab.tar.gz --strip-components=1 -C IsaacLab \
+    && rm /tmp/isaaclab.tar.gz \
     && cd IsaacLab \
     && ./isaaclab.sh --install
 
+COPY external/isaac-deps/cyclonedds.tar.gz /tmp/cyclonedds.tar.gz
 RUN mkdir cyclonedds \
-    && curl -fsSL --retry 10 --retry-all-errors --connect-timeout 15 \
-       "https://codeload.github.com/eclipse-cyclonedds/cyclonedds/tar.gz/${CYCLONEDDS_COMMIT}" \
-       | tar -xz --strip-components=1 -C cyclonedds \
+    && tar -xzf /tmp/cyclonedds.tar.gz --strip-components=1 -C cyclonedds \
+    && rm /tmp/cyclonedds.tar.gz \
     && cmake -S cyclonedds -B cyclonedds/build -DCMAKE_INSTALL_PREFIX=/opt/cyclonedds/install \
     && cmake --build cyclonedds/build --target install -j2 \
     && echo /opt/cyclonedds/install/lib > /etc/ld.so.conf.d/cyclonedds.conf \
     && ldconfig
 ENV CYCLONEDDS_HOME=/opt/cyclonedds/install
 
+COPY external/isaac-deps/unitree-sdk.tar.gz /tmp/unitree-sdk.tar.gz
 RUN mkdir unitree_sdk2_python \
-    && curl -fsSL --retry 10 --retry-all-errors --connect-timeout 15 \
-       "https://codeload.github.com/unitreerobotics/unitree_sdk2_python/tar.gz/${UNITREE_SDK_COMMIT}" \
-       | tar -xz --strip-components=1 -C unitree_sdk2_python \
+    && tar -xzf /tmp/unitree-sdk.tar.gz --strip-components=1 -C unitree_sdk2_python \
+    && rm /tmp/unitree-sdk.tar.gz \
     && /isaac-sim/python.sh -m pip install --no-cache-dir -e /opt/unitree_sdk2_python
 
+COPY external/isaac-deps/unitree-sim.tar.gz /tmp/unitree-sim.tar.gz
+COPY external/isaac-deps/teleimager.tar.gz /tmp/teleimager.tar.gz
 RUN mkdir unitree_sim_isaaclab \
-    && curl -fsSL --retry 10 --retry-all-errors --connect-timeout 15 \
-       "https://codeload.github.com/unitreerobotics/unitree_sim_isaaclab/tar.gz/${UNITREE_SIM_COMMIT}" \
-       | tar -xz --strip-components=1 -C unitree_sim_isaaclab \
+    && tar -xzf /tmp/unitree-sim.tar.gz --strip-components=1 -C unitree_sim_isaaclab \
     && mkdir unitree_sim_isaaclab/teleimager \
-    && curl -fsSL --retry 10 --retry-all-errors --connect-timeout 15 \
-       "https://codeload.github.com/unitreerobotics/teleimager/tar.gz/${TELEIMAGER_COMMIT}" \
-       | tar -xz --strip-components=1 -C unitree_sim_isaaclab/teleimager \
+    && tar -xzf /tmp/teleimager.tar.gz --strip-components=1 -C unitree_sim_isaaclab/teleimager \
+    && rm /tmp/unitree-sim.tar.gz /tmp/teleimager.tar.gz \
     && cd unitree_sim_isaaclab \
     && /isaac-sim/python.sh -m pip install --no-cache-dir -r requirements.txt \
     && /isaac-sim/python.sh -m pip install --no-cache-dir -e teleimager \
