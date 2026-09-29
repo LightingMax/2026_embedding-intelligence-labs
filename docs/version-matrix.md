@@ -2,7 +2,7 @@
 
 | 组件 | 版本 | 说明 |
 | --- | --- | --- |
-| Python | 3.11+ | Mock实验无第三方运行依赖 |
+| Python | 3.9+ | Mock实验无第三方运行依赖 |
 | ROS 2 | Jazzy | 与Ubuntu 24.04课堂容器配套 |
 | Isaac Sim | 5.0.0 | 宇树官方要求RTX 50系列使用该版本 |
 | Isaac Lab | v2.2.0 | 对应Isaac Sim 5.0.0 |
