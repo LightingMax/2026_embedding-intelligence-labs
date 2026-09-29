@@ -13,9 +13,7 @@ WORKDIR /opt
 RUN git clone https://github.com/isaac-sim/IsaacLab.git \
     && cd IsaacLab \
     && git checkout v2.2.0 \
-    && /isaac-sim/python.sh -m pip install --no-cache-dir -e source/isaaclab \
-       -e source/isaaclab_assets -e source/isaaclab_mimic -e source/isaaclab_rl \
-       -e source/isaaclab_tasks
+    && ./isaaclab.sh --install
 
 RUN git clone https://github.com/eclipse-cyclonedds/cyclonedds.git -b releases/0.10.x \
     && cmake -S cyclonedds -B cyclonedds/build -DCMAKE_INSTALL_PREFIX=/opt/cyclonedds/install \

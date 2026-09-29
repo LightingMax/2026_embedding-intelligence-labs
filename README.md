@@ -2,6 +2,8 @@
 
 本仓库把教材中的“递送蓝色杯子”主线实现为六个逐章实验和一个完整智能体。默认后端只需要 Python 3.9+；ROS 2 与 Isaac Sim 作为增强后端接入同一组数据结构和验收测试。
 
+项目主页：<https://github.com/LightingMax/2026_embedding-intelligence-labs>
+
 ## 一键体验
 
 ```bash
@@ -58,14 +60,14 @@ docker compose --profile ros2 up --build
 
 ## 可选模型和语音服务
 
-核心实验不需要密钥。可选服务只从进程环境读取凭据，仓库不会保存密钥：
+核心实验不需要密钥。Qwen只参与候选计划复核，不直接调用机器人技能；可选服务只从进程环境读取凭据，仓库不会保存密钥：
 
 ```bash
 export DASHSCOPE_API_KEY=...
 ./lab demo --llm qwen
 ```
 
-讯飞语音和其他语音服务通过 `SpeechProvider` 接口接入。课堂发布时由教师端代理保管凭据，学生浏览器不直接持有供应商密钥。
+讯飞语音和其他语音服务通过 `SpeechProvider` 接口接入。课堂发布时由教师端代理保管凭据，学生浏览器不直接持有供应商密钥。语音服务属于输入输出通道，任务语义仍由第2章接口校验。
 
 ## 目录
 

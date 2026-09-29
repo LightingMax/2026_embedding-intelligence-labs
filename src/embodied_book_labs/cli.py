@@ -7,6 +7,7 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 
 from .pipeline import result_bundle
+from .providers import ProviderError, qwen_review
 from .report import write_report
 
 
@@ -16,9 +17,14 @@ ARTIFACTS = ROOT / "artifacts" / "latest"
 
 
 def run(args: argparse.Namespace) -> int:
-    if args.llm != "none" and args.llm == "qwen" and not os.getenv("DASHSCOPE_API_KEY"):
-        raise SystemExit("选择Qwen时需要在进程环境设置DASHSCOPE_API_KEY")
     bundle = result_bundle(DATA, fault=args.fault)
+    if args.llm == "qwen":
+        try:
+            bundle["optional_qwen_plan_review"] = qwen_review(
+                bundle["chapter_2_task_spec"], bundle["chapter_3_plan_spec"]
+            )
+        except ProviderError as exc:
+            raise SystemExit(str(exc)) from exc
     path = write_report(bundle, ARTIFACTS)
     print(json.dumps({"status": "ok", "fault": args.fault, "report": str(path)}, ensure_ascii=False))
     return 0
