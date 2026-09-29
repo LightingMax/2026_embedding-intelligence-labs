@@ -19,7 +19,7 @@ if [[ "${mode}" == "g1-gui" ]]; then
 fi
 
 docker run --rm --gpus all --network host \
-  -e ACCEPT_EULA=Y -e PRIVACY_CONSENT=Y \
+  -e ACCEPT_EULA=Y -e PRIVACY_CONSENT=Y -e PYTHONUNBUFFERED=1 \
   "${display_args[@]}" \
   -v "${HOME}/docker/embodied-book-labs/cache:/root/.cache:rw" \
   -v "${HOME}/docker/embodied-book-labs/logs:/root/.nvidia-omniverse/logs:rw" \
