@@ -20,6 +20,7 @@ RUN mkdir IsaacLab \
     && tar -xzf /tmp/isaaclab.tar.gz --strip-components=1 -C IsaacLab \
     && rm /tmp/isaaclab.tar.gz \
     && cd IsaacLab \
+    && ln -s /isaac-sim _isaac_sim \
     && ./isaaclab.sh --install
 
 COPY external/isaac-deps/cyclonedds.tar.gz /tmp/cyclonedds.tar.gz
