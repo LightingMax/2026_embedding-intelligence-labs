@@ -35,8 +35,21 @@ download_archive unitree-sim.tar.gz \
 download_archive teleimager.tar.gz \
   https://codeload.github.com/unitreerobotics/teleimager/tar.gz/b81de448bca9c696d7ce145f4af71c66146d0b69
 
+RUNTIME_WHEELS="${DEPS_DIR}/runtime-wheels"
+mkdir -p "${RUNTIME_WHEELS}"
+if ! compgen -G "${RUNTIME_WHEELS}/pin-2.7.0-*.whl" >/dev/null \
+  || ! compgen -G "${RUNTIME_WHEELS}/gymnasium-1.2.0-*.whl" >/dev/null \
+  || ! compgen -G "${RUNTIME_WHEELS}/flatdict-4.0.1.*" >/dev/null; then
+  echo "缓存 Isaac Lab 核心运行依赖"
+  docker run --rm \
+    -v "${RUNTIME_WHEELS}:/wheels" \
+    --entrypoint /isaac-sim/python.sh \
+    nvcr.io/nvidia/isaac-sim:5.0.0 \
+    -m pip download --dest /wheels \
+    "flatdict==4.0.1" "gymnasium==1.2.0" "prettytable==3.3.0" "pin==2.7.0"
+fi
+
 docker build \
-  --network=host \
   -f "${ROOT_DIR}/docker/isaac/Dockerfile" \
   -t embodied-book-labs-isaac:5.0 \
   "${ROOT_DIR}"

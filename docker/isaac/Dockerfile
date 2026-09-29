@@ -16,14 +16,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /opt
 COPY external/isaac-deps/isaaclab.tar.gz /tmp/isaaclab.tar.gz
+COPY external/isaac-deps/runtime-wheels /tmp/runtime-wheels
 RUN mkdir IsaacLab \
     && tar -xzf /tmp/isaaclab.tar.gz --strip-components=1 -C IsaacLab \
     && rm /tmp/isaaclab.tar.gz \
     && cd IsaacLab \
     && ln -s /isaac-sim _isaac_sim \
     && ./isaaclab.sh --install none \
-    && /isaac-sim/python.sh -m pip install --no-cache-dir --no-build-isolation "flatdict==4.0.1" \
-    && /isaac-sim/python.sh -m pip install --no-cache-dir \
+    && /isaac-sim/python.sh -m pip install --no-index --find-links=/tmp/runtime-wheels \
+       --no-build-isolation "flatdict==4.0.1" \
+    && /isaac-sim/python.sh -m pip install --no-index --find-links=/tmp/runtime-wheels \
        "gymnasium==1.2.0" "prettytable==3.3.0" "pin==2.7.0" \
     && /isaac-sim/python.sh -m pip install --no-cache-dir --no-deps -e /opt/IsaacLab/source/isaaclab
 
